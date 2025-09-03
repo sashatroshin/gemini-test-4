@@ -11,13 +11,92 @@
         <div class="form-container">
             <h1>Ввод данных по смене</h1>
             <form id="shift-form">
-                <!-- Fieldsets go here -->
+                <fieldset>
+                    <legend>Размен</legend>
+                    <div class="form-group">
+                        <label for="razmen">Размен в кассе на начало смены</label>
+                        <input type="text" id="razmen" name="razmen" inputmode="decimal">
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Расходы</legend>
+                    <div id="expenses-container"></div>
+                    <button type="button" id="add-expense-btn">+ Добавить расход</button>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Отчёт из Presto</legend>
+                    <div class="form-group">
+                        <label for="presto_nalichnie">Наличные Presto</label>
+                        <input type="text" id="presto_nalichnie" name="presto_nalichnie" inputmode="decimal">
+                    </div>
+                    <div class="form-group">
+                        <label for="presto_karti">Карты Presto</label>
+                        <input type="text" id="presto_karti" name="presto_karti" inputmode="decimal">
+                    </div>
+                    <div class="form-group">
+                        <label for="presto_vozvrati">Возвраты Presto (инфо)</label>
+                        <input type="text" id="presto_vozvrati" name="presto_vozvrati" inputmode="decimal">
+                    </div>
+                    <div class="form-group">
+                        <label for="dostavka">Доставка</label>
+                        <input type="text" id="dostavka" name="dostavka" inputmode="decimal">
+                    </div>
+                    <div class="form-group">
+                        <label for="samovivoz">Самовывоз UDS</label>
+                        <input type="text" id="samovivoz" name="samovivoz" inputmode="decimal">
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Фактическая выручка</legend>
+                    <div class="form-group">
+                        <label for="nalichnie_vsego">Всего наличных в кассе</label>
+                        <input type="text" id="nalichnie_vsego" name="nalichnie_vsego" inputmode="decimal">
+                    </div>
+                    <div class="form-group">
+                        <label for="terminal_sverka">Сверки по терминалам</label>
+                        <input type="text" id="terminal_sverka" name="terminal_sverka" inputmode="decimal">
+                    </div>
+                </fieldset>
             </form>
         </div>
         <div class="summary-container">
             <h2>Сводка за смену</h2>
             <div id="summary-content">
-                <!-- Summary items go here -->
+                <div class="summary-item">
+                    <span>Текущая бизнес дата:</span>
+                    <span id="summary-buisnessdate">-</span>
+                </div>
+                <div class="summary-item">
+                    <span>Общие расходы:</span>
+                    <span id="summary-obschie_rashodi">0</span>
+                </div>
+                <div class="summary-item">
+                    <span>Ожидаемые наличные:</span>
+                    <span id="summary-ozhidaemie_nalichnie">0</span>
+                </div>
+                <div class="summary-item">
+                    <span>Разница по наличным:</span>
+                    <span id="summary-raznica_nalichnie">0</span>
+                </div>
+                <div class="summary-item">
+                    <span>Факт по безналу:</span>
+                    <span id="summary-fakt_beznal">0</span>
+                </div>
+                <div class="summary-item">
+                    <span>Разница по безналу:</span>
+                    <span id="summary-raznica_beznal">0</span>
+                </div>
+                <div class="summary-item total">
+                    <span>Общая выручка:</span>
+                    <span id="summary-obschaya_vyruchka">0</span>
+                </div>
+                <div class="summary-item total">
+                    <span>Чистая выручка наличными:</span>
+                    <span id="summary-chistie_nalichnie">0</span>
+                }
             </div>
             <div id="summary-messages"></div>
         </div>
