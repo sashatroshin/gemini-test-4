@@ -1,0 +1,18 @@
+{
+  "webhookUrl": "https://example.com/webhook",
+  "expenseCategories": [
+    "Продукты",
+    "Хозтовары",
+    "Такси"
+  ],
+  "messages": {
+    "surplus": {
+      "title": "Излишек",
+      "template": "Обнаружен излишек в размере {amount}."
+    },
+    "shortage": {
+      "title": "Недостача",
+      "template": "Обнаружена недостача в размере {amount}."
+    }
+  }
+}
