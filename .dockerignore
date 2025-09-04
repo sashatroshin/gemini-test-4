@@ -1,0 +1,10 @@
+# Ignore Node.js specific files for deployment
+package.json
+package-lock.json
+node_modules/
+
+# Ignore local development and testing tools
+.trae/
+playwright_*.js
+debug_script.js
+*.png
