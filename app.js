@@ -55,3 +55,5 @@ function renderMessage(messageKey, amount) {
 }
 
 // ... (rest of the app.js file)
+
+document.addEventListener('DOMContentLoaded', initializeApp);
