@@ -3,57 +3,44 @@ let saveTimer;
 let webhookTimer;
 let pageBusinessDate;
 
-// ... (business date logic) ...
-
-// --- Core Application Logic ---
-// ... (loadConfig, initializeApp, etc.) ...
-
-function updateSummary() {
-    // ... (calculations for summary values) ...
-
-    // Update summary display
-    // ... (update textContent for summary items)
-
-    // Update discrepancy messages
-    renderDiscrepancyMessages(raznica_nalichnie, raznica_beznal);
-}
-
-function renderDiscrepancyMessages(cashDiff, cashlessDiff) {
-    const messagesContainer = document.getElementById('summary-messages');
-    messagesContainer.innerHTML = ''; // Clear previous messages
-
-    if (cashDiff > 0) {
-        renderMessage('cashSurplus', cashDiff);
-    } else if (cashDiff < 0) {
-        renderMessage('cashShortage', -cashDiff);
-    }
-
-    if (cashlessDiff > 0) {
-        renderMessage('cashlessDiscrepancyPositive', cashlessDiff);
-    } else if (cashlessDiff < 0) {
-        renderMessage('cashlessDiscrepancyNegative', -cashlessDiff);
+async function loadConfig() {
+    try {
+        const response = await fetch('config.json');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        config = await response.json();
+    } catch (error) {
+        console.error("Failed to load config:", error);
+        // Provide a default config to prevent further errors
+        config = {
+            businessDate: { changeTime: "09:00" },
+            messages: {},
+            expenseCategories: []
+        };
     }
 }
 
-function renderMessage(messageKey, amount) {
-    const messagesContainer = document.getElementById('summary-messages');
-    const messageConfig = config.messages[messageKey];
-    if (!messageConfig) return;
+function setBusinessDate() {
+    const now = new Date();
+    const shiftStartHour = parseInt(config.businessDate.changeTime.split(':')[0], 10);
+    let businessDate = new Date(now);
 
-    const messageElement = document.createElement('div');
-    messageElement.classList.add('summary-message');
-
-    const title = document.createElement('h3');
-    title.textContent = messageConfig.title;
-
-    const text = document.createElement('p');
-    text.textContent = messageConfig.template.replace('{amount}', amount.toFixed(2));
-
-    messageElement.appendChild(title);
-    messageElement.appendChild(text);
-    messagesContainer.appendChild(messageElement);
+    if (now.getHours() < shiftStartHour) {
+        businessDate.setDate(businessDate.getDate() - 1);
+    }
+    
+    pageBusinessDate = businessDate.toLocaleDateString('ru-RU');
+    document.getElementById('summary-businessdate').textContent = pageBusinessDate;
 }
 
-// ... (rest of the app.js file)
+function initializeApp() {
+    loadConfig().then(() => {
+        setBusinessDate();
+        // ... other initialization logic that depends on config
+    });
+}
 
 document.addEventListener('DOMContentLoaded', initializeApp);
+
+// ... (the rest of your functions: updateSummary, renderDiscrepancyMessages, etc.)
