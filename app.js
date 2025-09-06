@@ -16,29 +16,41 @@ async function loadConfig() {
     }
 }
 
-function setBusinessDate() {
+function getBusinessDate() {
     const now = new Date();
     const timeZone = config.businessDate.timezone;
+    const shiftStartHour = parseInt(config.businessDate.changeTime.split(':')[0], 10);
+
     if (!timeZone) {
         console.error("Timezone not found in config. Falling back to local time.");
-        const shiftStartHour = parseInt(config.businessDate.changeTime.split(':')[0], 10);
         let businessDate = new Date(now);
         if (now.getHours() < shiftStartHour) {
             businessDate.setDate(businessDate.getDate() - 1);
         }
-        pageBusinessDate = businessDate.toLocaleDateString('ru-RU');
-        document.getElementById('summary-businessdate').textContent = pageBusinessDate;
-        return;
+        return businessDate.toLocaleDateString('ru-RU');
     }
-    const shiftStartHour = parseInt(config.businessDate.changeTime.split(':')[0], 10);
+
     const parts = new Intl.DateTimeFormat('en-CA', { timeZone, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', hour12: false }).formatToParts(now).reduce((acc, part) => { acc[part.type] = part.value; return acc; }, {});
     const currentHourInTimezone = parseInt(parts.hour, 10);
     let businessDate = new Date(`${parts.year}-${parts.month}-${parts.day}T00:00:00`);
+
     if (currentHourInTimezone < shiftStartHour) {
         businessDate.setDate(businessDate.getDate() - 1);
     }
-    pageBusinessDate = businessDate.toLocaleDateString('ru-RU');
+    return businessDate.toLocaleDateString('ru-RU');
+}
+
+function setBusinessDate() {
+    pageBusinessDate = getBusinessDate();
     document.getElementById('summary-businessdate').textContent = pageBusinessDate;
+}
+
+function checkForBusinessDateChange() {
+    const correctBusinessDate = getBusinessDate();
+    if (pageBusinessDate !== correctBusinessDate) {
+        saveToLocalStorage();
+        location.reload();
+    }
 }
 
 function handleFocus(event) {
@@ -278,6 +290,7 @@ function initializeApp() {
         });
         loadFromLocalStorage();
         updateSummary();
+        setInterval(checkForBusinessDateChange, 60000);
     });
 }
 
