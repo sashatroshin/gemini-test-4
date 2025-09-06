@@ -74,6 +74,7 @@ function addExpenseRow(expense = { amount: '', category: '', comment: '' }) {
         <div class="form-group expense-group">
             <input type="text" placeholder="Сумма" class="expense-amount" value="${expense.amount}" inputmode="decimal">
             <select class="expense-category">
+                <option value="" disabled ${expense.category ? '' : 'selected'}>Выберите категорию</option>
                 ${config.expenseCategories.map(c => `<option value="${c}" ${c === expense.category ? 'selected' : ''}>${c}</option>`).join('')}
             </select>
             <input type="text" placeholder="Комментарий" class="expense-comment" value="${expense.comment}">
@@ -132,7 +133,7 @@ function updateSummary() {
     });
 
     const allExpensesValid = values.expenses.every(expense => {
-        return expense.amount.trim() !== '';
+        return expense.amount.trim() !== '' && expense.category.trim() !== '';
     });
 
     const allFieldsFilled = allMainFieldsFilled && allExpensesValid;
