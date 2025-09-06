@@ -106,10 +106,10 @@ function getFormValues() {
     document.querySelectorAll('#shift-form input[type="text"]:not(.expense-comment):not(.expense-amount), #shift-form select:not(.expense-category)').forEach(el => {
         if (el.id) values[el.id] = el.value;
     });
-    values.expenses = Array.from(document.querySelectorAll('.expense-row')).map(row => ({
-        amount: row.querySelector('.expense-amount').value,
-        category: row.querySelector('.expense-category').value,
-        comment: row.querySelector('.expense-comment').value
+    values.rashodi = Array.from(document.querySelectorAll('.expense-row')).map(row => ({
+        summa: row.querySelector('.expense-amount').value,
+        kategoriya: row.querySelector('.expense-category').value,
+        kommentariy: row.querySelector('.expense-comment').value
     }));
     return values;
 }
@@ -144,8 +144,8 @@ function updateSummary() {
         return el && el.value.trim() !== '';
     });
 
-    const allExpensesValid = values.expenses.every(expense => {
-        return expense.amount.trim() !== '' && expense.category.trim() !== '';
+    const allExpensesValid = values.rashodi.every(expense => {
+        return expense.summa.trim() !== '' && expense.kategoriya.trim() !== '';
     });
 
     const allFieldsFilled = allMainFieldsFilled && allExpensesValid;
@@ -158,7 +158,7 @@ function updateSummary() {
     const nalichnieVsego = parseFloat(values.nalichnie_vsego) || 0;
     const terminalSverka = parseFloat(values.terminal_sverka) || 0;
 
-    const totalExpenses = values.expenses.reduce((sum, ex) => sum + (parseFloat(ex.amount) || 0), 0);
+    const totalExpenses = values.rashodi.reduce((sum, ex) => sum + (parseFloat(ex.summa) || 0), 0);
     document.getElementById('summary-obschie_rashodi').textContent = totalExpenses.toFixed(2);
 
     const expectedCash = razmen + prestoNalichnie - totalExpenses;
@@ -228,14 +228,20 @@ function loadFromLocalStorage() {
     if (savedData) {
         const values = JSON.parse(savedData);
         Object.keys(values).forEach(key => {
-            if (key !== 'expenses') {
+            if (key !== 'rashodi') {
                 const el = document.getElementById(key);
                 if (el) el.value = values[key];
             }
         });
         document.getElementById('expenses-container').innerHTML = '';
-        if (values.expenses) {
-            values.expenses.forEach(expense => addExpenseRow(expense));
+        if (values.rashodi) {
+            values.rashodi.forEach(expense => {
+                addExpenseRow({
+                    amount: expense.summa,
+                    category: expense.kategoriya,
+                    comment: expense.kommentariy
+                });
+            });
         }
     }
 }
@@ -243,16 +249,16 @@ function loadFromLocalStorage() {
 async function sendWebhook() {
     if (!config.webhookUrl) return;
     const data = getFormValues();
-    data.businessDate = pageBusinessDate;
+    data.biznes_data = pageBusinessDate;
     // Add summary data
-    data.summary = {
-        totalExpenses: document.getElementById('summary-obschie_rashodi').textContent,
-        expectedCash: document.getElementById('summary-ozhidaemie_nalichnie').textContent,
-        cashDifference: document.getElementById('summary-raznica_nalichnie').textContent,
-        actualCashless: document.getElementById('summary-fakt_beznal').textContent,
-        cashlessDifference: document.getElementById('summary-raznica_beznal').textContent,
-        totalRevenue: document.getElementById('summary-obschaya_vyruchka').textContent,
-        netCashRevenue: document.getElementById('summary-chistie_nalichnie').textContent
+    data.svodka = {
+        obshchie_rashodi: document.getElementById('summary-obschie_rashodi').textContent,
+        ozhidaemie_nalichnie: document.getElementById('summary-ozhidaemie_nalichnie').textContent,
+        raznica_nalichnie: document.getElementById('summary-raznica_nalichnie').textContent,
+        fakt_beznal: document.getElementById('summary-fakt_beznal').textContent,
+        raznica_beznal: document.getElementById('summary-raznica_beznal').textContent,
+        obshchaya_vyruchka: document.getElementById('summary-obschaya_vyruchka').textContent,
+        chistie_nalichnie: document.getElementById('summary-chistie_nalichnie').textContent
     };
 
     try {
