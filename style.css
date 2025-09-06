@@ -5,6 +5,26 @@ body {
     color: #1c1e21;
 }
 
+header {
+    background-color: #fff;
+    padding: 10px 20px;
+    border-bottom: 1px solid #dddfe2;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 1.5em;
+    color: #1c1e21;
+    border-bottom: none; /* Override generic h1 style */
+}
+
+header p {
+    margin: 5px 0 0;
+    color: #606770;
+}
+
 .container {
     display: flex;
     align-items: flex-start;
