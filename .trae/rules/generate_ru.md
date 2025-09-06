@@ -204,7 +204,8 @@ alwaysApply: false
 ├── Implementation.md
 ├── project_structure.md
 ├── UI_UX_doc.md
-└── Bug_tracking.md
+├── Bug_tracking.md
+└── PRD_v{номер версии}.md // Перемести файл PRD по которому генерируется план реализации. 
 ```
 *Старые версии этой папки будут храниться в `/Docs_archive` в папках с временными метками.*
 
@@ -271,7 +272,8 @@ project-name/
 ├── docs/
 ├── tests/
 ├── config/
-└── deployment/
+├── deployment/
+└──local_dev_tools/
 `
 
 
