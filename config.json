@@ -1,4 +1,6 @@
 {
+  "appName": "Shift Report",
+  "barName": "My Bar",
   "webhookUrl": "https://example.com/webhook",
   "businessDate": {
     "changeTime": "09:00",
