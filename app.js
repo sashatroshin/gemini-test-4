@@ -126,10 +126,16 @@ function updateSummary() {
         'dostavka', 'samovivoz', 'nalichnie_vsego', 'terminal_sverka'
     ];
 
-    const allFieldsFilled = requiredFields.every(id => {
+    const allMainFieldsFilled = requiredFields.every(id => {
         const el = document.getElementById(id);
         return el && el.value.trim() !== '';
     });
+
+    const allExpensesValid = values.expenses.every(expense => {
+        return expense.amount.trim() !== '';
+    });
+
+    const allFieldsFilled = allMainFieldsFilled && allExpensesValid;
 
     const razmen = parseFloat(values.razmen) || 0;
     const prestoNalichnie = parseFloat(values.presto_nalichnie) || 0;
