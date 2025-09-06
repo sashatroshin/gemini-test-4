@@ -113,32 +113,58 @@ input.error {
 }
 
 .expense-row {
-    display: grid;
-    grid-template-columns: 2fr 2fr 3fr auto;
-    gap: 10px;
-    align-items: flex-end;
     margin-bottom: 10px;
     padding-bottom: 10px;
     border-bottom: 1px solid #f0f2f5;
 }
 
-.expense-row .form-group {
+.expense-group {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
+}
+
+.expense-group > * {
     margin-bottom: 0;
 }
 
-.delete-expense-btn {
-    background: none;
-    border: none;
-    color: #606770;
-    font-size: 1.5em;
-    cursor: pointer;
-    padding: 0 5px;
-    line-height: 1;
-    transition: color 0.2s;
+.expense-group .expense-amount,
+.expense-group .expense-category,
+.expense-group .expense-comment {
+    width: 100%; /* Let flexbox handle the sizing */
 }
 
-.delete-expense-btn:hover {
-    color: #1877f2;
+.expense-group .expense-amount {
+    flex: 2;
+}
+
+.expense-group .expense-category {
+    flex: 2;
+}
+
+.expense-group .expense-comment {
+    flex: 3;
+}
+
+.remove-expense-btn {
+    background-color: #fa383e; /* Red color */
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    font-size: 1.2em;
+    font-weight: bold;
+    line-height: 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    padding: 0;
+}
+
+.remove-expense-btn:hover {
+    background-color: #d92b2b; /* Darker red on hover */
 }
 
 /* Summary Styles */
@@ -170,6 +196,14 @@ input.error {
     margin-top: 5px;
 }
 
+.summary-item span.synced {
+    color: #389e0d; /* Green */
+}
+
+.summary-item span.local {
+    color: #d46b08; /* Orange */
+}
+
 /* Summary Messages */
 #summary-messages {
     margin-top: 20px;
@@ -194,4 +228,14 @@ input.error {
 .summary-message p {
     margin: 0;
     color: #614700;
+}
+
+.summary-message.placeholder {
+    background-color: #f0f2f5;
+    border-color: #dddfe2;
+    text-align: center;
+}
+
+.summary-message.placeholder p {
+    color: #606770;
 }

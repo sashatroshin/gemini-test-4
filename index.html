@@ -7,9 +7,12 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <header>
+        <h1 id="app-name"></h1>
+        <p id="bar-name"></p>
+    </header>
     <div class="container">
         <div class="form-container">
-            <h1>Ввод данных по смене</h1>
             <form id="shift-form">
                 <fieldset>
                     <legend>Размен</legend>
@@ -96,6 +99,10 @@
                 <div class="summary-item total">
                     <span>Чистая выручка наличными:</span>
                     <span id="summary-chistie_nalichnie">0</span>
+                </div>
+                <div class="summary-item status">
+                    <span>Статус:</span>
+                    <span id="summary-sync-status">-</span>
                 </div>
             <div id="summary-messages"></div>
         </div>

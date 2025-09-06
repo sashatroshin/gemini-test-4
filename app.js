@@ -41,17 +41,27 @@ function setBusinessDate() {
     document.getElementById('summary-businessdate').textContent = pageBusinessDate;
 }
 
+function handleFocus(event) {
+    const input = event.target;
+    if (input.dataset.expression) {
+        input.value = input.dataset.expression;
+    }
+}
+
 function handleCalculation(event) {
     const input = event.target;
     let value = input.value.trim();
     if (value.includes('+')) {
         try {
+            input.dataset.expression = value;
             value = value.replace(/,/g, '.');
             const result = value.split('+').reduce((sum, term) => sum + (parseFloat(term.trim()) || 0), 0);
             input.value = result.toFixed(2);
         } catch (error) {
             console.error('Calculation error:', error);
         }
+    } else {
+        delete input.dataset.expression;
     }
     updateSummary();
 }
@@ -71,8 +81,10 @@ function addExpenseRow(expense = { amount: '', category: '', comment: '' }) {
         </div>
     `;
     container.appendChild(newRow);
+    const amountInput = newRow.querySelector('.expense-amount');
+    amountInput.addEventListener('focus', handleFocus);
+    amountInput.addEventListener('blur', handleCalculation);
     newRow.querySelector('.remove-expense-btn').addEventListener('click', () => { newRow.remove(); updateSummary(); });
-    newRow.querySelector('.expense-amount').addEventListener('blur', handleCalculation);
     newRow.querySelectorAll('input, select').forEach(el => el.addEventListener('input', updateSummary));
 }
 
@@ -89,10 +101,36 @@ function getFormValues() {
     return values;
 }
 
+function updateSyncStatus(status) {
+    const statusEl = document.getElementById('summary-sync-status');
+    if (!statusEl) return;
+
+    if (status === 'synced') {
+        statusEl.textContent = 'Синхронизировано';
+        statusEl.classList.remove('local');
+        statusEl.classList.add('synced');
+    } else {
+        statusEl.textContent = 'Сохранено локально';
+        statusEl.classList.remove('synced');
+        statusEl.classList.add('local');
+    }
+}
+
 function updateSummary() {
     clearTimeout(saveTimer);
     clearTimeout(webhookTimer);
     const values = getFormValues();
+
+    const requiredFields = [
+        'razmen', 'presto_nalichnie', 'presto_karti', 
+        'dostavka', 'samovivoz', 'nalichnie_vsego', 'terminal_sverka'
+    ];
+
+    const allFieldsFilled = requiredFields.every(id => {
+        const el = document.getElementById(id);
+        return el && el.value.trim() !== '';
+    });
+
     const razmen = parseFloat(values.razmen) || 0;
     const prestoNalichnie = parseFloat(values.presto_nalichnie) || 0;
     const prestoKarti = parseFloat(values.presto_karti) || 0;
@@ -122,9 +160,16 @@ function updateSummary() {
     const netCashRevenue = nalichnieVsego - razmen - totalExpenses;
     document.getElementById('summary-chistie_nalichnie').textContent = netCashRevenue.toFixed(2);
 
-    renderDiscrepancyMessages(cashDifference, cashlessDifference);
+    const container = document.getElementById('summary-messages');
+    if (allFieldsFilled) {
+        renderDiscrepancyMessages(cashDifference, cashlessDifference);
+    } else {
+        container.innerHTML = '<div class="summary-message placeholder"><p>Заполните все поля для отображения подсказок</p></div>';
+    }
+
     saveTimer = setTimeout(saveToLocalStorage, 500);
     webhookTimer = setTimeout(sendWebhook, 60000); // 1 minute
+    updateSyncStatus('local');
 }
 
 function renderDiscrepancyMessages(cashDiff, cashlessDiff) {
@@ -199,21 +244,29 @@ async function sendWebhook() {
         });
         if (response.ok) {
             console.log('Webhook sent successfully');
+            updateSyncStatus('synced');
         } else {
             console.error('Webhook failed:', response.statusText);
+            updateSyncStatus('local');
         }
     } catch (error) {
         console.error('Error sending webhook:', error);
+        updateSyncStatus('local');
     }
 }
 
 function initializeApp() {
     loadConfig().then(() => {
+        document.getElementById('app-name').textContent = config.appName || 'Shift Report';
+        document.getElementById('bar-name').textContent = config.barName || 'My Bar';
         setBusinessDate();
         document.getElementById('add-expense-btn').addEventListener('click', () => addExpenseRow());
         const inputs = document.querySelectorAll('#shift-form input[type="text"]');
         inputs.forEach(input => {
-            if(input.inputMode === 'decimal') input.addEventListener('blur', handleCalculation);
+            if (input.inputMode === 'decimal') {
+                input.addEventListener('focus', handleFocus);
+                input.addEventListener('blur', handleCalculation);
+            }
             input.addEventListener('input', updateSummary);
         });
         loadFromLocalStorage();
