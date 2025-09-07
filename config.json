@@ -1,14 +1,30 @@
 {
-  "webhookUrl": "https://example.com/webhook",
+  "appName": "BarBalance",
+  "barName": "Taqueria",
+  "webhookUrl": "https://n8n.troshinsasha.ru/webhook/ayiwtrhgwfiyg",
   "businessDate": {
-    "changeTime": "09:00",
+    "changeTime": "8:50",
     "timezone": "Asia/Irkutsk"
   },
   "expenseCategories": [
+    "ЗАРПЛАТА",
+    "РЫНОК",
+    "DJ",
     "ОХРАНА",
-    "ТАКСИ",
+    "АПТЕКА",
     "ХОЗТОВАРЫ",
-    "ПРОДУКТЫ"
+    "КАНЦТОВАРЫ",
+    "ТАКСИ / ДОСТАВКА",
+    "ФОТОГРАФ",
+    "OZON",
+    "WB",
+    "ПЯТЁРОЧКА",
+    "ИНТЕРНЕТ 4G / МОБИЛЬНАЯ СВЯЗЬ",
+    "ДОБРЫЕ ТРАДИЦИИ",
+    "ИНТЕРНЕТ СЕРВИСЫ",
+    "ЛЕРУА",
+    "DNS",
+    "ДОБАВИТЬ КОНТРАГЕНТА"
   ],
   "messages": {
     "cashSurplus": {
