@@ -5,11 +5,16 @@ let pageBusinessDate;
 
 async function loadConfig() {
     try {
-        const response = await fetch('config.json');
+        const urlParams = new URLSearchParams(window.location.search);
+        const barId = urlParams.get('bar');
+        const configFile = barId ? `configs/${barId}.json` : 'config.json';
+
+        const response = await fetch(configFile);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         config = await response.json();
+        config.barId = barId; // Store barId in config for later use
     } catch (error) {
         console.error("Failed to load config:", error);
         config = { businessDate: { changeTime: "09:00" }, messages: {}, expenseCategories: [] };
@@ -220,11 +225,13 @@ function renderDiscrepancyMessages(cashDiff, cashlessDiff) {
 
 function saveToLocalStorage() {
     const values = getFormValues();
-    localStorage.setItem(`shiftData_${pageBusinessDate}`, JSON.stringify(values));
+    const key = `shiftData_${config.barId || 'default'}_${pageBusinessDate}`;
+    localStorage.setItem(key, JSON.stringify(values));
 }
 
 function loadFromLocalStorage() {
-    const savedData = localStorage.getItem(`shiftData_${pageBusinessDate}`);
+    const key = `shiftData_${config.barId || 'default'}_${pageBusinessDate}`;
+    const savedData = localStorage.getItem(key);
     if (savedData) {
         const values = JSON.parse(savedData);
         Object.keys(values).forEach(key => {
