@@ -1,7 +1,7 @@
 {
   "appName": "BarBalance",
-  "barName": "Bar 1",
-  "webhookUrl": "https://n8n.troshinsasha.ru/webhook/ayiwtrhgwfiyg",
+  "barName": "Taqueria",
+  "webhookUrl": "https://n8n.troshinsasha.ru/webhook/barbalance_taqueria",
   "businessDate": {
     "changeTime": "9:00",
     "timezone": "Asia/Irkutsk"
