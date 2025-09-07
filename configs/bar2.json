@@ -1,6 +1,6 @@
 {
   "appName": "BarBalance",
-  "barName": "Bar 2",
+  "barName": "Тестовый Bar 2",
   "webhookUrl": "https://n8n.troshinsasha.ru/webhook/bar2",
   "businessDate": {
     "changeTime": "9:00",
