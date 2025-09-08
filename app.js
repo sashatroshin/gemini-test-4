@@ -150,7 +150,7 @@ function updateSummary() {
     });
 
     const allExpensesValid = values.rashodi.every(expense => {
-        return expense.summa.trim() !== '' && expense.kategoriya.trim() !== '';
+        return expense.summa.trim() !== '' && expense.kategoriya.trim() !== '' && expense.kommentariy.trim() !== '';
     });
 
     const allFieldsFilled = allMainFieldsFilled && allExpensesValid;
