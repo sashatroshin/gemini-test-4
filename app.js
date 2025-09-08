@@ -192,7 +192,7 @@ function updateSummary() {
             renderDiscrepancyMessages(cashDifference, cashlessDifference);
         }
     } else {
-        container.innerHTML = '<div class="summary-message placeholder"><p>Заполните все поля для отображения подсказок</p></div>';
+        container.innerHTML = '<div class="summary-message placeholder"><p>✏️ Заполните все поля для отображения подсказок</p></div>';
     }
 
     saveTimer = setTimeout(saveToLocalStorage, 500);
@@ -237,12 +237,12 @@ function renderCashflowMessage(prestoNalichnie, totalExpenses, razmen) {
 
     if (prestoNalichnie < totalExpenses) {
         const diff = razmen + prestoNalichnie - totalExpenses;
-        text = `Расходы превышают выручку по наличным. В размене осталось: ${diff.toFixed(2)}`;
+        text = `➡️ В размене осталось: ${diff.toFixed(2)}`;
     } else if (prestoNalichnie > totalExpenses) {
         const diff = prestoNalichnie - totalExpenses;
-        text = `В конверт с отчётом убираем ${diff.toFixed(2)}, а в размен возвращаем ${razmen.toFixed(2)}`;
+        text = `📤 Изъятие из кассы: ${diff.toFixed(2)}`;
     } else {
-        text = 'Инкассация не требуется, так как расходы равны выручке по наличным, в размене остаётся ' + razmen.toFixed(2);
+        text = '✅ Инкассация не требуется, так как расходы равны выручке по наличным.';
     }
 
     el.innerHTML = `<strong>${title}</strong><p>${text}</p>`;
