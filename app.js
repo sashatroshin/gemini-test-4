@@ -240,9 +240,9 @@ function renderCashflowMessage(prestoNalichnie, totalExpenses, razmen) {
         text = `Расходы превышают выручку по наличным. В размене осталось: ${diff.toFixed(2)}`;
     } else if (prestoNalichnie > totalExpenses) {
         const diff = prestoNalichnie - totalExpenses;
-        text = `Изъятие из кассы: ${diff.toFixed(2)}`;
+        text = `В конверт с отчётом убираем ${diff.toFixed(2)}, а в размен возвращаем ${razmen.toFixed(2)}`;
     } else {
-        text = 'Инкассация не требуется, так как расходы равны выручке по наличным.';
+        text = 'Инкассация не требуется, так как расходы равны выручке по наличным, в размене остаётся ' + razmen.toFixed(2);
     }
 
     el.innerHTML = `<strong>${title}</strong><p>${text}</p>`;
