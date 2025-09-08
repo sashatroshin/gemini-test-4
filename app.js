@@ -181,7 +181,7 @@ function updateSummary() {
     const totalRevenue = prestoNalichnie + prestoKarti;
     document.getElementById('summary-obschaya_vyruchka').textContent = totalRevenue.toFixed(2);
 
-    const netCashRevenue = nalichnieVsego - razmen - totalExpenses;
+    const netCashRevenue = nalichnieVsego - razmen;
     document.getElementById('summary-chistie_nalichnie').textContent = netCashRevenue.toFixed(2);
 
     const container = document.getElementById('summary-messages');
