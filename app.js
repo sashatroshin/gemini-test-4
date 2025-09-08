@@ -140,7 +140,7 @@ function updateSummary() {
     const values = getFormValues();
 
     const requiredFields = [
-        'razmen', 'presto_nalichnie', 'presto_karti', 
+        'razmen', 'presto_nalichnie', 'presto_karti',
         'dostavka', 'samovivoz', 'nalichnie_vsego', 'terminal_sverka'
     ];
 
@@ -186,7 +186,11 @@ function updateSummary() {
 
     const container = document.getElementById('summary-messages');
     if (allFieldsFilled) {
-        renderDiscrepancyMessages(cashDifference, cashlessDifference);
+        if (cashDifference === 0 && cashlessDifference === 0) {
+            renderCashflowMessage(prestoNalichnie, totalExpenses);
+        } else {
+            renderDiscrepancyMessages(cashDifference, cashlessDifference);
+        }
     } else {
         container.innerHTML = '<div class="summary-message placeholder"><p>Заполните все поля для отображения подсказок</p></div>';
     }
@@ -203,7 +207,7 @@ function renderDiscrepancyMessages(cashDiff, cashlessDiff) {
 
     if (cashDiff > 0) message = config.messages.cashSurplus;
     else if (cashDiff < 0) message = config.messages.cashShortage;
-    
+
     if (message) {
         const el = document.createElement('div');
         el.classList.add('summary-message', cashDiff > 0 ? 'surplus' : 'shortage');
@@ -221,6 +225,28 @@ function renderDiscrepancyMessages(cashDiff, cashlessDiff) {
         el.innerHTML = `<strong>${message.title}</strong><p>${message.template.replace('{amount}', Math.abs(cashlessDiff).toFixed(2))}</p>`;
         container.appendChild(el);
     }
+}
+
+function renderCashflowMessage(prestoNalichnie, totalExpenses) {
+    const container = document.getElementById('summary-messages');
+    container.innerHTML = '';
+    const el = document.createElement('div');
+    el.classList.add('summary-message', 'info');
+    let title = 'Движение наличных';
+    let text = '';
+
+    if (prestoNalichnie < totalExpenses) {
+        const diff = totalExpenses - prestoNalichnie;
+        text = `Расходы превышают выручку по наличным. Остаток размена в кассе: ${diff.toFixed(2)}`;
+    } else if (prestoNalichnie > totalExpenses) {
+        const diff = prestoNalichnie - totalExpenses;
+        text = `Изъятие из кассы: ${diff.toFixed(2)}`;
+    } else {
+        text = 'Инкассация не требуется, так как расходы равны выручке по наличным.';
+    }
+
+    el.innerHTML = `<strong>${title}</strong><p>${text}</p>`;
+    container.appendChild(el);
 }
 
 function saveToLocalStorage() {
