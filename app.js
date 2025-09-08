@@ -187,7 +187,7 @@ function updateSummary() {
     const container = document.getElementById('summary-messages');
     if (allFieldsFilled) {
         if (cashDifference === 0 && cashlessDifference === 0) {
-            renderCashflowMessage(prestoNalichnie, totalExpenses);
+            renderCashflowMessage(prestoNalichnie, totalExpenses, razmen);
         } else {
             renderDiscrepancyMessages(cashDifference, cashlessDifference);
         }
@@ -227,7 +227,7 @@ function renderDiscrepancyMessages(cashDiff, cashlessDiff) {
     }
 }
 
-function renderCashflowMessage(prestoNalichnie, totalExpenses) {
+function renderCashflowMessage(prestoNalichnie, totalExpenses, razmen) {
     const container = document.getElementById('summary-messages');
     container.innerHTML = '';
     const el = document.createElement('div');
@@ -236,8 +236,8 @@ function renderCashflowMessage(prestoNalichnie, totalExpenses) {
     let text = '';
 
     if (prestoNalichnie < totalExpenses) {
-        const diff = totalExpenses - prestoNalichnie;
-        text = `Расходы превышают выручку по наличным. Остаток размена в кассе: ${diff.toFixed(2)}`;
+        const diff = razmen + prestoNalichnie - totalExpenses;
+        text = `Расходы превышают выручку по наличным. В размене осталось: ${diff.toFixed(2)}`;
     } else if (prestoNalichnie > totalExpenses) {
         const diff = prestoNalichnie - totalExpenses;
         text = `Изъятие из кассы: ${diff.toFixed(2)}`;
