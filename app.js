@@ -5,11 +5,16 @@ let pageBusinessDate;
 
 async function loadConfig() {
     try {
-        const response = await fetch('config.json');
+        const urlParams = new URLSearchParams(window.location.search);
+        const barId = urlParams.get('bar');
+        const configFile = barId ? `configs/${barId}.json` : 'config.json';
+
+        const response = await fetch(configFile);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         config = await response.json();
+        config.barId = barId; // Store barId in config for later use
     } catch (error) {
         console.error("Failed to load config:", error);
         config = { businessDate: { changeTime: "09:00" }, messages: {}, expenseCategories: [] };
@@ -135,7 +140,7 @@ function updateSummary() {
     const values = getFormValues();
 
     const requiredFields = [
-        'razmen', 'presto_nalichnie', 'presto_karti', 
+        'razmen', 'presto_nalichnie', 'presto_karti',
         'dostavka', 'samovivoz', 'nalichnie_vsego', 'terminal_sverka'
     ];
 
@@ -145,7 +150,7 @@ function updateSummary() {
     });
 
     const allExpensesValid = values.rashodi.every(expense => {
-        return expense.summa.trim() !== '' && expense.kategoriya.trim() !== '';
+        return expense.summa.trim() !== '' && expense.kategoriya.trim() !== '' && expense.kommentariy.trim() !== '';
     });
 
     const allFieldsFilled = allMainFieldsFilled && allExpensesValid;
@@ -176,14 +181,18 @@ function updateSummary() {
     const totalRevenue = prestoNalichnie + prestoKarti;
     document.getElementById('summary-obschaya_vyruchka').textContent = totalRevenue.toFixed(2);
 
-    const netCashRevenue = nalichnieVsego - razmen - totalExpenses;
+    const netCashRevenue = nalichnieVsego - razmen;
     document.getElementById('summary-chistie_nalichnie').textContent = netCashRevenue.toFixed(2);
 
     const container = document.getElementById('summary-messages');
     if (allFieldsFilled) {
-        renderDiscrepancyMessages(cashDifference, cashlessDifference);
+        if (cashDifference === 0 && cashlessDifference === 0) {
+            renderCashflowMessage(prestoNalichnie, totalExpenses, razmen);
+        } else {
+            renderDiscrepancyMessages(cashDifference, cashlessDifference);
+        }
     } else {
-        container.innerHTML = '<div class="summary-message placeholder"><p>Заполните все поля для отображения подсказок</p></div>';
+        container.innerHTML = '<div class="summary-message placeholder"><p>✏️ Заполните все поля для отображения подсказок</p></div>';
     }
 
     saveTimer = setTimeout(saveToLocalStorage, 500);
@@ -198,7 +207,7 @@ function renderDiscrepancyMessages(cashDiff, cashlessDiff) {
 
     if (cashDiff > 0) message = config.messages.cashSurplus;
     else if (cashDiff < 0) message = config.messages.cashShortage;
-    
+
     if (message) {
         const el = document.createElement('div');
         el.classList.add('summary-message', cashDiff > 0 ? 'surplus' : 'shortage');
@@ -218,13 +227,37 @@ function renderDiscrepancyMessages(cashDiff, cashlessDiff) {
     }
 }
 
+function renderCashflowMessage(prestoNalichnie, totalExpenses, razmen) {
+    const container = document.getElementById('summary-messages');
+    container.innerHTML = '';
+    const el = document.createElement('div');
+    el.classList.add('summary-message', 'info');
+    let title = 'Движение наличных';
+    let text = '';
+
+    if (prestoNalichnie < totalExpenses) {
+        const diff = razmen + prestoNalichnie - totalExpenses;
+        text = `➡️ В размене осталось: ${diff.toFixed(2)}`;
+    } else if (prestoNalichnie > totalExpenses) {
+        const diff = prestoNalichnie - totalExpenses;
+        text = `📤 Изъятие из кассы: ${diff.toFixed(2)}`;
+    } else {
+        text = '✅ Инкассация не требуется, так как расходы равны выручке по наличным.';
+    }
+
+    el.innerHTML = `<strong>${title}</strong><p>${text}</p>`;
+    container.appendChild(el);
+}
+
 function saveToLocalStorage() {
     const values = getFormValues();
-    localStorage.setItem(`shiftData_${pageBusinessDate}`, JSON.stringify(values));
+    const key = `shiftData_${config.barId || 'default'}_${pageBusinessDate}`;
+    localStorage.setItem(key, JSON.stringify(values));
 }
 
 function loadFromLocalStorage() {
-    const savedData = localStorage.getItem(`shiftData_${pageBusinessDate}`);
+    const key = `shiftData_${config.barId || 'default'}_${pageBusinessDate}`;
+    const savedData = localStorage.getItem(key);
     if (savedData) {
         const values = JSON.parse(savedData);
         Object.keys(values).forEach(key => {
@@ -280,11 +313,27 @@ async function sendWebhook() {
     }
 }
 
+async function loadInstruction() {
+    try {
+        const response = await fetch('instruction.md');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const markdown = await response.text();
+        const html = marked.parse(markdown);
+        document.getElementById('instruction-container').innerHTML = html;
+    } catch (error) {
+        console.error("Failed to load instruction:", error);
+        document.getElementById('instruction-container').innerHTML = '<p>Не удалось загрузить инструкцию.</p>';
+    }
+}
+
 function initializeApp() {
     loadConfig().then(() => {
         document.getElementById('app-name').textContent = config.appName || 'Shift Report';
         document.getElementById('bar-name').textContent = config.barName || 'My Bar';
         setBusinessDate();
+        loadInstruction(); // Load instructions
         document.getElementById('add-expense-btn').addEventListener('click', () => addExpenseRow());
         const inputs = document.querySelectorAll('#shift-form input[type="text"]');
         inputs.forEach(input => {
