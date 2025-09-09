@@ -313,11 +313,27 @@ async function sendWebhook() {
     }
 }
 
+async function loadInstruction() {
+    try {
+        const response = await fetch('instruction.md');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const markdown = await response.text();
+        const html = marked.parse(markdown);
+        document.getElementById('instruction-container').innerHTML = html;
+    } catch (error) {
+        console.error("Failed to load instruction:", error);
+        document.getElementById('instruction-container').innerHTML = '<p>Не удалось загрузить инструкцию.</p>';
+    }
+}
+
 function initializeApp() {
     loadConfig().then(() => {
         document.getElementById('app-name').textContent = config.appName || 'Shift Report';
         document.getElementById('bar-name').textContent = config.barName || 'My Bar';
         setBusinessDate();
+        loadInstruction(); // Load instructions
         document.getElementById('add-expense-btn').addEventListener('click', () => addExpenseRow());
         const inputs = document.querySelectorAll('#shift-form input[type="text"]');
         inputs.forEach(input => {
